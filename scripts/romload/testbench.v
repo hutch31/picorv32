@@ -55,17 +55,13 @@ module testbench;
 	reg [31:0] memory [0:MEM_SIZE/4-1];
 	integer x;
 
-	// simulate hardware assist of clearing RAM and copying ROM data into
-	// memory
+	// simulate hardware assist of clearing RAM
 	initial
 	begin
 		// clear memory
 		for (x=0; x<MEM_SIZE/4; x=x+1) memory[x] = 0;
 		// load rom contents
 		$readmemh("firmware32.hex", memory);
-		// copy .data section
-		for (x=0; x<(`C_SYM__BSS_START - `C_SYM___GLOBAL_POINTER); x=x+4)
-			memory[(`C_SYM___GLOBAL_POINTER+x)/4] = memory[(`C_SYM__DATA_LMA+x)/4];
 	end
 `endif
 
