@@ -1,6 +1,12 @@
 .section .text
 .global _start
 .global _pvstart
+.global _data_lma
+.global _data
+.global _edata
+
+.option push
+.option norelax
 
 _pvstart:
 /* zero-initialize all registers */
@@ -48,5 +54,25 @@ sw zero,0(sp)
 sw zero,4(sp)
 sw zero,8(sp)
 sw zero,12(sp)
+
+/* load the data segment LMA, start pointer, and end pointer
+   and copy initialized data from the load address to the
+   data segment memory. */
+lui  a0, %hi(_data_lma)
+addi a0, a0, %lo(_data_lma)
+lui  a1, %hi(_data)
+addi a1, a1, %lo(_data)
+lui  a2, %hi(_edata)
+addi a2, a2, %lo(_edata)
+
+.copyloop:
+
+lw   a3, 0(a0)
+sw   a3, 0(a1)
+addi a0, a0, 4
+addi a1, a1, 4
+bne  a1, a2, .copyloop
+
+.option pop
 
 j _start
